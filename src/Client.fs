@@ -2,6 +2,7 @@ namespace Counter
 
 open WebSharper
 open WebSharper.UI
+open WebSharper.UI.Notation
 open WebSharper.UI.Templating
 
 [<JavaScript>]
@@ -25,17 +26,18 @@ module Client =
 
     let init = 0
 
-    let view model =
+    let view =
         let vmodel = Var.Create init
         let handle msg =
             let model = update msg vmodel.Value
-            vmodel.Set model
-        vmodel.Set model
+            vmodel := model
         MySPA()
             .OnIncrement(fun _ -> handle Message.Increment)
             .OnDecrement(fun _ -> handle Message.Decrement)
             .Counter(V(string vmodel.V))
             .Bind()
+        fun model ->
+            vmodel := model
 
     [<SPAEntryPoint>]
     let Main () =

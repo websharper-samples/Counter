@@ -11,16 +11,19 @@ In this tutorial, you will learn about using WebSharper UI to implement a simple
 ### You already learned in the [previous tutorial]() how to:
 
 2. **Create WebSharper SPA projects**
+
     In the parent folder of your choice, type
     ```
     dotnet new websharper-spa -lang f# -n YourApp
     ```
  3. **Edit the key files in your SPA project**
-    You will be editing:
+
+    For simple SPAs, these files will be:
     -   **`wwwroot\index.html`** - Your main SPA - this is the file you open to run your app
     -   **`Client.fs`** - The logic for your SPA - this is where your F# code will be
 
 4. **Use HTML templates**
+
     WebSharper UI provides an advanced templating engine with dynamic code generation both for C# and F#. Always consider using external HTML templates instead of inlined HTML combinators to speed up your developer workflow. Templates allow you to make changes to your presentation layer without having to compile your project.
     ```fsharp
     open WebSharper.UI.Templating
@@ -129,7 +132,7 @@ As a best practice, always consider keeping all of your SPA markup (including te
 </head>
 <body>
      <button ws-onclick="OnDecrement">-</button>
-     <div>${Counter}</div>
+     <div ws-hole="Counter"></div>
      <button ws-onclick="OnIncrement">+</button>
      <script type="text/javascript" src="Content/Counter.min.js"></script>
 </body>
@@ -168,7 +171,7 @@ module Client =
 
     let init = 0
 
-    let view init =
+    let view =
         let vmodel = Var.Create init
         let handle msg =
             let model = update msg vmodel.Value
@@ -178,6 +181,8 @@ module Client =
             .OnDecrement(fun _ -> handle Message.Decrement)
             .Counter(V(string vmodel.V))
             .Bind()
+        fun model ->
+            vmodel := model
 
     [<SPAEntryPoint>]
     let Main () =
@@ -186,7 +191,15 @@ module Client =
 
 ### The `view` function
 
-You probably spotted that `view` looks slightly more complicated than just "take the master HTML file, bind the button event handlers, and reflect the counter as a text label," and you are right. First, it returns `unit`. This is because `MySPA().xxx(...).Bind()` applies the reactive machinery on the document once as a "side-effect", and any subsequent calls just propagate new model values to the UI. Note that, however, you don't call `view` more than once, although nothing keeps you from it. For instance, you might as well start with:
+You probably spotted that `view` looks slightly more complicated than just "take the master HTML file, bind the button event handlers, and reflect the counter as a text label," and you are right.
+
+First, `view` encodes an **entire "runtime"**: it gives means to dispatch messages (`handle`), updates the model upon receiving those messages, and rebinds the changes onto the UI. Yet it manages to do all that in only four lines of code because the real complexity: binding the model to the UI is **done automatically by the UI layer** (via templating, here).
+
+Second, this is possible because your presentation layer describes reactive content and is expressed in terms of `vmodel` and not on `model`, thus using **`Var<Model>`** values and not `Model` ones. (This distinction will become important in the upcoming tutorials as we work towards establishing a more comprehensive application pattern.)  For instance, it uses `V(string vmodel.V)` to take the current value of the model (`vmodel.V`, an integer), convert it to a string (`string vmodel.V`), and convert the result back to a view (`V(string vmodel.V)`) to bind it the `Counter` placeholder.
+
+Third, `MySPA().xxx(...).Bind()` lights the reactive machinery on the document the first time it runs, as a "side-effect". Therefore, you fill in your placeholders and bind your events, and seal things off with `.Bind()` **in the closure of `view`**.  Another way to think about this is that `view` is not constructing the presentation layer, but instead it **sets up and binds the reactive pieces and the main logic** onto that presentation layer (which is supplied by the template.)
+
+And last, the main job of `view` ends up simply **updating the reactive model** underneath the bound UI (by simply doing `vmodel := model`), and thus its return value is `unit`. Note, however, that you don't call `view` more than once (unlike in Elm) because the first call already sets everything up, but nothing keeps you from doing it. For instance, you might as well start with:
 
 ```fsharp
 [<SPAEntryPoint>]
@@ -199,15 +212,16 @@ let Main () =
     view 5
 ```
 
-Second, `view` also encodes an **entire "runtime"**: it gives means to dispatch messages (`handle`), updates the model upon receiving those messages, and rebinds the changes onto the UI. Yet it manages to do all that in only four lines of code because the real complexity: applying model changes reactively to the UI (and two-way binding it back to the model) is **done automatically by the UI layer** (via templating, here). This means that WebSharper UI applications **don't require "diffing" between two virtual DOM representations** as employed by popular libraries like React, but instead, changes propagate through the dataflow graph constructed from the reactive embeddings and always yield the minimal number of updates right where necessary. This also means that your WebSharper UI applications do not require React or other reactive libraries.
-
-> Note: you can still work with React and React components through direct bindings, if you prefer.
-
-Third, `view` operates on `vmodel` and not on `model`, thus on **`Var<Model>`** values and not `Model` ones. (This distinction will become important in the upcoming tutorials as we work towards establishing a more comprehensive application pattern.)  For instance, it uses `V(string vmodel.V)` to take the current value of the model (`vmodel.V`, an integer), convert it to a string (`string vmodel.V`), and convert the result back to a view (`V(string vmodel.V)`) to bind it the `Counter` placeholder.
 
 ## Conclusion
 
-In this tutorial, you saw how you can use WebSharper UI to build a Model-View-Update (MVU)-like pattern to develop simple web applications. Your model and message type, your `update` function were exactly as you would expect, while your `view` function TODO...  But hey, there is a whole lot more to see, so stay tuned for more tutorials.
+In this tutorial, you saw how you can use WebSharper UI to build a Model-View-Update (MVU)-like pattern to develop simple web applications. Your model and message type, and your `update` function were exactly as you would expect, while your `view` function had a couple important differences that reflect the capabilities of the underlying WebSharper UI reactive layer.
+
+One key thing to remember is that WebSharper UI applications **don't require "diffing" between two virtual DOM representations** as employed by popular libraries like React, but instead, changes propagate through the dataflow graph constructed from the reactive embeddings and always yield the minimal number of updates right where necessary. This also means that your WebSharper UI applications **don't depend on React or other reactive libraries**.
+
+> Note: you can work with React and React components through direct bindings, if you prefer.
+
+There is a whole lot more to see, so stay tuned for more.
 
 ## Source code and try the app
 
