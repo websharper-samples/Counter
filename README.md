@@ -11,16 +11,19 @@ In this tutorial, you will learn about using WebSharper UI to implement a simple
 ### You already learned in the [previous tutorial]() how to:
 
 2. **Create WebSharper SPA projects**
+
     In the parent folder of your choice, type
     ```
     dotnet new websharper-spa -lang f# -n YourApp
     ```
  3. **Edit the key files in your SPA project**
+ 
     You will be editing:
     -   **`wwwroot\index.html`** - Your main SPA - this is the file you open to run your app
     -   **`Client.fs`** - The logic for your SPA - this is where your F# code will be
 
 4. **Use HTML templates**
+
     WebSharper UI provides an advanced templating engine with dynamic code generation both for C# and F#. Always consider using external HTML templates instead of inlined HTML combinators to speed up your developer workflow. Templates allow you to make changes to your presentation layer without having to compile your project.
     ```fsharp
     open WebSharper.UI.Templating
