@@ -1,4 +1,4 @@
-# Part 2. Model-View-Update (MVU) style apps with WebSharper UI
+# Part 2. Model-View-Update (MVU) style apps with WebSharper UI [![Build status](https://ci.appveyor.com/api/projects/status/7g2x8efv5xcty87c?svg=true)](https://ci.appveyor.com/project/IntelliFactory/counter)
 
 > Written by Adam Granicz, IntelliFactory.
 
@@ -8,7 +8,7 @@ In this tutorial, you will learn about using WebSharper UI to implement a simple
 
  1. **Using a Model-View-Update (MVU)-like approach** with WebSharper UI. As you will see, WebSharper UI can implement a number of different styles of reactive UI programming easily.
 
-### You already learned in the [previous tutorial]() how to:
+### You already learned in the [previous tutorial](https://github.com/websharper-samples/LoginWithBulma) how to:
 
 2. **Create WebSharper SPA projects**
 
