@@ -225,6 +225,6 @@ There is a whole lot more to see, so stay tuned for more.
 
 ## Source code and try the app
 
-You can fork [this SPA project](https://github.com/websharper-samples/LoginWithBulma) via GitHub. You can also [try out a slightly adapted version](http://try.websharper.com/snippet/adam.granicz/0000Jr) live on Try WebSharper.
+You can fork [this SPA project](https://github.com/websharper-samples/Counter) via GitHub. You can also [try out a slightly adapted version](http://try.websharper.com/snippet/adam.granicz/0000Jr) live on Try WebSharper.
 
 Happy coding!
